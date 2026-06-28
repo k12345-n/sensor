@@ -1065,7 +1065,6 @@ if ($res) {
             <div class="section-title">🎛️ Device Control &amp; Settings</div>
             <div class="two-col">
                 <div class="panel">
-                    // Panel configuration: controls for alarm test overrides and threshold limit values.
                     <h2>🔊 Alarm &amp; Fan Control</h2>
                     <div class="ctrl-group">
                         <label>Alarm (Buzzer)</label>
@@ -1645,7 +1644,7 @@ if ($res) {
                 buzzerOutput = hasHazard;
             }
 
-            let fanOutput = (isDanger || webFanState === 1 || manualTrigger);
+            let fanOutput = (isDanger || webFanState === 1 || webAlarmState === 1 || webAlarmState === 2);
 
             const speakerLbl = document.getElementById('speaker-status-lbl');
             const speakerIcon = document.getElementById('speaker-status-icon');

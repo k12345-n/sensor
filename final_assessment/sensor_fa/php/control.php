@@ -3,7 +3,7 @@
 session_start();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) && empty($_POST['device_id'])) {
     echo json_encode(["status" => 401, "message" => "Unauthorized. Please log in first."]);
     exit;
 }
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     // List of allowed manual controls for buzzer and fan.
-    $allowed_actions = ['alarm_on', 'alarm_off', 'alarm_mute', 'fan_on', 'fan_off', 'reboot_config'];
+    $allowed_actions = ['alarm_on', 'alarm_off', 'alarm_mute', 'fan_on', 'fan_off', 'reboot_config', 'stop_all'];
 
     // Check if the requested action is valid.
     if (empty($action) || !in_array($action, $allowed_actions)) {
@@ -88,6 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $current[1] = 1;
             break;
         case 'fan_off':
+            $current[1] = 0;
+            break;
+        case 'stop_all':
+            $current[0] = 0;
             $current[1] = 0;
             break;
     }

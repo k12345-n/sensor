@@ -449,6 +449,7 @@ void setWebAlarm(int state) {
     String actionName = "alarm_off";
     if (state == 1) actionName = "alarm_on";
     else if (state == 2) actionName = "alarm_mute";
+    else if (state == 3) actionName = "stop_all";
     String requestData = "device_id=" + String(deviceId) + "&action=" + actionName;
     http.POST(requestData);
     http.end();
@@ -570,10 +571,11 @@ void loop() {
 
   // Check Button 2: Toggle manual override test alarm.
   if (manualPressed == LOW && lastManualState == HIGH) {
-    if (webAlarmState == 1) {
-      Serial.println("🔕 Button 2: Stopping manual alarm.");
-      setWebAlarm(0);
+    if (webAlarmState == 1 || webAlarmState == 2) {
+      Serial.println("🔕 Button 2: Stopping manual alarm and fan.");
+      setWebAlarm(3);
       webAlarmState = 0;
+      webFanState = 0;
     } else {
       Serial.println("🔔 Button 2: Starting manual alarm.");
       setWebAlarm(1);
@@ -663,6 +665,6 @@ void loop() {
   else                         buzzerOutput = hasHazard;
 
   digitalWrite(BUZZER_PIN, buzzerOutput ? HIGH : LOW);
-  digitalWrite(RELAY_PIN, (hasDanger || webFanState == 1 || manualTrigger) ? HIGH : LOW);
+  digitalWrite(RELAY_PIN, (hasDanger || webFanState == 1 || webAlarmState == 1 || webAlarmState == 2) ? HIGH : LOW);
   delay(10);
 }
