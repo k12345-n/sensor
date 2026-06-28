@@ -74,10 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
             echo json_encode(["status" => 401, "message" => "Unauthorized"]);
             exit;
         }
-        
+
         $new_username = trim($input['username'] ?? '');
         $new_password = $input['password'] ?? '';
-        
+
         if (empty($new_username)) {
             echo json_encode(["status" => 400, "message" => "Username cannot be empty."]);
             exit;
@@ -132,13 +132,19 @@ if (!isset($_SESSION['user_id'])) {
     ?>
     <!DOCTYPE html>
     <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>IoT Safety Portal - Access Control</title>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
             body {
                 font-family: 'Outfit', sans-serif;
                 background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
@@ -151,6 +157,7 @@ if (!isset($_SESSION['user_id'])) {
                 overflow: hidden;
                 position: relative;
             }
+
             body::before {
                 content: '';
                 position: absolute;
@@ -161,6 +168,7 @@ if (!isset($_SESSION['user_id'])) {
                 left: 15%;
                 border-radius: 50%;
             }
+
             body::after {
                 content: '';
                 position: absolute;
@@ -171,6 +179,7 @@ if (!isset($_SESSION['user_id'])) {
                 right: 15%;
                 border-radius: 50%;
             }
+
             .auth-container {
                 background: rgba(30, 41, 59, 0.7);
                 backdrop-filter: blur(16px);
@@ -186,6 +195,7 @@ if (!isset($_SESSION['user_id'])) {
                 transform: translateY(0);
                 transition: transform 0.3s ease;
             }
+
             .logo-icon {
                 width: 60px;
                 height: 60px;
@@ -198,6 +208,7 @@ if (!isset($_SESSION['user_id'])) {
                 font-size: 28px;
                 box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
             }
+
             h1 {
                 text-align: center;
                 font-size: 24px;
@@ -205,12 +216,14 @@ if (!isset($_SESSION['user_id'])) {
                 color: #fff;
                 margin-bottom: 8px;
             }
+
             p.subtitle {
                 text-align: center;
                 font-size: 14px;
                 color: #94a3b8;
                 margin-bottom: 32px;
             }
+
             .tabs {
                 display: flex;
                 background: rgba(15, 23, 42, 0.6);
@@ -218,6 +231,7 @@ if (!isset($_SESSION['user_id'])) {
                 padding: 4px;
                 margin-bottom: 24px;
             }
+
             .tab-btn {
                 flex: 1;
                 border: none;
@@ -230,14 +244,17 @@ if (!isset($_SESSION['user_id'])) {
                 border-radius: 8px;
                 transition: all 0.2s ease;
             }
+
             .tab-btn.active {
                 background: #6366f1;
                 color: #fff;
                 box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
             }
+
             .form-group {
                 margin-bottom: 20px;
             }
+
             label {
                 display: block;
                 font-size: 13px;
@@ -247,6 +264,7 @@ if (!isset($_SESSION['user_id'])) {
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
+
             input {
                 width: 100%;
                 background: rgba(15, 23, 42, 0.5);
@@ -259,9 +277,11 @@ if (!isset($_SESSION['user_id'])) {
                 outline: none;
                 transition: border-color 0.2s ease;
             }
+
             input:focus {
                 border-color: #6366f1;
             }
+
             .btn-submit {
                 width: 100%;
                 background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
@@ -279,13 +299,16 @@ if (!isset($_SESSION['user_id'])) {
                 justify-content: center;
                 gap: 8px;
             }
+
             .btn-submit:hover {
                 transform: translateY(-1px);
                 box-shadow: 0 12px 20px rgba(99, 102, 241, 0.3);
             }
+
             .btn-submit:active {
                 transform: translateY(0);
             }
+
             .error-message {
                 background: rgba(239, 68, 68, 0.1);
                 border: 1px solid rgba(239, 68, 68, 0.2);
@@ -296,33 +319,38 @@ if (!isset($_SESSION['user_id'])) {
                 margin-bottom: 20px;
                 display: none;
             }
+
             .spinner {
                 width: 18px;
                 height: 18px;
-                border: 2px solid rgba(255,255,255,0.3);
+                border: 2px solid rgba(255, 255, 255, 0.3);
                 border-radius: 50%;
                 border-top-color: #fff;
                 animation: spin 0.8s linear infinite;
                 display: none;
             }
+
             @keyframes spin {
-                to { transform: rotate(360deg); }
+                to {
+                    transform: rotate(360deg);
+                }
             }
         </style>
     </head>
+
     <body>
         <div class="auth-container">
             <div class="logo-icon">🛡️</div>
             <h1 id="auth-title">Welcome Back</h1>
             <p class="subtitle" id="auth-subtitle">Access your smart safety operations command dashboard.</p>
-            
+
             <div class="tabs">
                 <button class="tab-btn active" id="tab-login" onclick="setMode('login')">Sign In</button>
                 <button class="tab-btn" id="tab-signup" onclick="setMode('signup')">Sign Up</button>
             </div>
-            
+
             <div class="error-message" id="error-box"></div>
-            
+
             <form onsubmit="handleSubmit(event)">
                 <div class="form-group">
                     <label>Username</label>
@@ -341,17 +369,17 @@ if (!isset($_SESSION['user_id'])) {
 
         <script>
             let currentMode = 'login';
-            
+
             function setMode(mode) {
                 currentMode = mode;
                 document.getElementById('error-box').style.display = 'none';
-                
+
                 const tabLogin = document.getElementById('tab-login');
                 const tabSignup = document.getElementById('tab-signup');
                 const title = document.getElementById('auth-title');
                 const subtitle = document.getElementById('auth-subtitle');
                 const submitLabel = document.getElementById('submit-label');
-                
+
                 if (mode === 'login') {
                     tabLogin.classList.add('active');
                     tabSignup.classList.remove('active');
@@ -366,7 +394,7 @@ if (!isset($_SESSION['user_id'])) {
                     submitLabel.textContent = 'Create Profile';
                 }
             }
-            
+
             async function handleSubmit(e) {
                 e.preventDefault();
                 const errorBox = document.getElementById('error-box');
@@ -374,11 +402,11 @@ if (!isset($_SESSION['user_id'])) {
                 const submitLabel = document.getElementById('submit-label');
                 const usernameVal = document.getElementById('username').value.trim();
                 const passwordVal = document.getElementById('password').value;
-                
+
                 errorBox.style.display = 'none';
                 spinner.style.display = 'inline-block';
                 submitLabel.textContent = currentMode === 'login' ? 'Signing In...' : 'Registering...';
-                
+
                 try {
                     const response = await fetch(`index.php?action=${currentMode}`, {
                         method: 'POST',
@@ -386,7 +414,7 @@ if (!isset($_SESSION['user_id'])) {
                         body: JSON.stringify({ username: usernameVal, password: passwordVal })
                     });
                     const result = await response.json();
-                    
+
                     if (result.status === 200) {
                         window.location.reload();
                     } else if (result.status === 201) {
@@ -419,6 +447,7 @@ if (!isset($_SESSION['user_id'])) {
             }
         </script>
     </body>
+
     </html>
     <?php
     exit;
@@ -537,9 +566,20 @@ if ($res) {
             font-size: 14px;
         }
 
-        .status-safe    { background: #e6f4ea; color: #137333; }
-        .status-warning { background: #fef7e0; color: #b06000; }
-        .status-danger  { background: #fce8e6; color: #c5221f; }
+        .status-safe {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .status-warning {
+            background: #fef7e0;
+            color: #b06000;
+        }
+
+        .status-danger {
+            background: #fce8e6;
+            color: #c5221f;
+        }
 
         .tabs {
             display: flex;
@@ -564,8 +604,13 @@ if ($res) {
             color: #fff;
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         .two-col {
             display: grid;
@@ -575,7 +620,9 @@ if ($res) {
         }
 
         @media (max-width: 720px) {
-            .two-col { grid-template-columns: 1fr; }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
         }
 
         .panel {
@@ -594,7 +641,9 @@ if ($res) {
             padding-bottom: 10px;
         }
 
-        .ctrl-group { margin-bottom: 16px; }
+        .ctrl-group {
+            margin-bottom: 16px;
+        }
 
         .ctrl-group label {
             display: block;
@@ -622,13 +671,38 @@ if ($res) {
             transition: opacity .15s, transform .1s;
         }
 
-        .btn:active { transform: scale(.97); }
-        .btn-red   { background: #fce8e6; color: #c5221f; }
-        .btn-green { background: #e6f4ea; color: #137333; }
-        .btn-blue  { background: #e8f0fe; color: #1a73e8; }
-        .btn-grey  { background: #f1f3f4; color: #444; }
-        .btn:hover { opacity: .85; }
-        .btn:disabled { opacity: .4; cursor: not-allowed; }
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .btn-red {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+
+        .btn-green {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .btn-blue {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .btn-grey {
+            background: #f1f3f4;
+            color: #444;
+        }
+
+        .btn:hover {
+            opacity: .85;
+        }
+
+        .btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
 
         #ctrl-feedback {
             margin-top: 12px;
@@ -637,7 +711,9 @@ if ($res) {
             min-height: 18px;
         }
 
-        .field { margin-bottom: 14px; }
+        .field {
+            margin-bottom: 14px;
+        }
 
         .field label {
             display: block;
@@ -674,9 +750,18 @@ if ($res) {
             font-size: 14px;
         }
 
-        .insight-row:last-child { border-bottom: none; }
-        .insight-row .ilabel { color: #666; }
-        .insight-row .ivalue { font-weight: 700; color: #111; }
+        .insight-row:last-child {
+            border-bottom: none;
+        }
+
+        .insight-row .ilabel {
+            color: #666;
+        }
+
+        .insight-row .ivalue {
+            font-weight: 700;
+            color: #111;
+        }
 
         .insight-card {
             background: #f8f9fa;
@@ -688,12 +773,14 @@ if ($res) {
             justify-content: space-between;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .insight-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             background: #ffffff;
             border-color: #dee2e6;
         }
+
         .insight-card .ilabel {
             font-size: 11px;
             color: #777;
@@ -702,15 +789,24 @@ if ($res) {
             letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
+
         .insight-card .ivalue {
             font-size: 20px;
             font-weight: 700;
             color: #222;
         }
 
-        .ivalue.warn   { color: #b06000 !important; }
-        .ivalue.danger { color: #c5221f !important; }
-        .ivalue.safe   { color: #137333 !important; }
+        .ivalue.warn {
+            color: #b06000 !important;
+        }
+
+        .ivalue.danger {
+            color: #c5221f !important;
+        }
+
+        .ivalue.safe {
+            color: #137333 !important;
+        }
 
         .chart-container {
             background: #fff;
@@ -734,9 +830,13 @@ if ($res) {
             overflow: hidden;
         }
 
-        table { width: 100%; border-collapse: collapse; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-        th, td {
+        th,
+        td {
             padding: 11px 14px;
             text-align: left;
             border-bottom: 1px solid #eee;
@@ -751,9 +851,11 @@ if ($res) {
             text-transform: uppercase;
         }
 
-        tr:hover td { background: #f9fafb; }
+        tr:hover td {
+            background: #f9fafb;
+        }
 
-        
+
         .device-item-card {
             background: #fff;
             padding: 16px 20px;
@@ -766,7 +868,9 @@ if ($res) {
             border-left: 5px solid #ccc;
         }
 
-        .device-item-card.active-connected { background: #f8fbf9; }
+        .device-item-card.active-connected {
+            background: #f8fbf9;
+        }
 
         .device-item-details h4 {
             margin: 0 0 4px;
@@ -788,7 +892,7 @@ if ($res) {
             margin-bottom: 2px;
         }
 
-        
+
         #wifi-config-modal {
             display: none;
             position: fixed;
@@ -861,7 +965,9 @@ if ($res) {
             margin-bottom: 10px;
         }
 
-        .open-link:hover { opacity: .9; }
+        .open-link:hover {
+            opacity: .9;
+        }
 
         .spinner {
             display: inline-block;
@@ -875,8 +981,16 @@ if ($res) {
             margin-right: 8px;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spin-anim { display: inline-block; animation: spin 2s linear infinite; }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin-anim {
+            display: inline-block;
+            animation: spin 2s linear infinite;
+        }
     </style>
 </head>
 
@@ -886,20 +1000,27 @@ if ($res) {
             <h1>🛡️ Smart Safety &amp; Gas Leakage System</h1>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <div class="device-tag" style="margin:0;">
-                    Device: 
-                    <select id="device-select" onchange="changeSelectedDevice(this)" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc; font-weight: 700; color: #111; background: #fff; cursor: pointer; outline: none; vertical-align: middle;">
+                    Device:
+                    <select id="device-select" onchange="changeSelectedDevice(this)"
+                        style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc; font-weight: 700; color: #111; background: #fff; cursor: pointer; outline: none; vertical-align: middle;">
                         <option value="" data-ip="---" data-name="">No Primary Device</option>
                         <?php foreach ($devices as $index => $d): ?>
-                            <option value="<?php echo htmlspecialchars($d['device_id']); ?>" data-ip="<?php echo htmlspecialchars($d['device_ip'] ?? '---'); ?>" data-name="<?php echo htmlspecialchars($d['device_name'] ?? ''); ?>" <?php echo $index === 0 ? 'selected' : ''; ?>>
+                            <option value="<?php echo htmlspecialchars($d['device_id']); ?>"
+                                data-ip="<?php echo htmlspecialchars($d['device_ip'] ?? '---'); ?>"
+                                data-name="<?php echo htmlspecialchars($d['device_name'] ?? ''); ?>" <?php echo $index === 0 ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars(!empty($d['device_name']) ? $d['device_name'] : $d['device_id']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    | Device IP: <strong id="device-ip-val"><?php echo htmlspecialchars($devices[0]['device_ip'] ?? '---'); ?></strong>
+                    | Device IP: <strong
+                        id="device-ip-val"><?php echo htmlspecialchars($devices[0]['device_ip'] ?? '---'); ?></strong>
                 </div>
-                <div class="user-profile" style="display: flex; align-items: center; gap: 8px; background: #f1f3f4; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #444;">
+                <div class="user-profile"
+                    style="display: flex; align-items: center; gap: 8px; background: #f1f3f4; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #444;">
                     <span>👤 <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-                    <a href="index.php?action=logout" style="color: #c5221f; text-decoration: none; border-left: 1px solid #ccc; padding-left: 8px; margin-left: 4px; font-weight: 700;" title="Log Out">Log Out</a>
+                    <a href="index.php?action=logout"
+                        style="color: #c5221f; text-decoration: none; border-left: 1px solid #ccc; padding-left: 8px; margin-left: 4px; font-weight: 700;"
+                        title="Log Out">Log Out</a>
                 </div>
             </div>
         </header>
@@ -911,7 +1032,6 @@ if ($res) {
             <button class="tab-button" data-tab="tab-profile" onclick="openTab('tab-profile')">👤 Profile</button>
         </div>
 
-        
         <!-- TAB content 1: Renders parameter cards (gas, temp, flame, motion) and dashboard status. -->
         <div id="tab-main" class="tab-content active">
             <div class="section-title">📡 Live Sensor Readings</div>
@@ -950,36 +1070,48 @@ if ($res) {
                     <div class="ctrl-group">
                         <label>Alarm (Buzzer)</label>
                         <div class="btn-row">
-                            <button class="btn btn-red"   onclick="sendControl('alarm_on')">🔴 Sound Alarm</button>
+                            <button class="btn btn-red" onclick="sendControl('alarm_on')">🔴 Sound Alarm</button>
                             <button class="btn btn-green" onclick="sendControl('alarm_off')">🟢 Stop Alarm</button>
-                            <button class="btn btn-grey"  onclick="sendControl('alarm_mute')">🔕 Mute Alarm</button>
+                            <button class="btn btn-grey" onclick="sendControl('alarm_mute')">🔕 Mute Alarm</button>
                         </div>
                     </div>
                     <div class="ctrl-group">
                         <label>Ventilation Fan</label>
                         <div class="btn-row">
                             <button class="btn btn-green" onclick="sendControl('fan_on')">🌀 Fan ON</button>
-                            <button class="btn btn-grey"  onclick="sendControl('fan_off')">⬜ Fan OFF</button>
+                            <button class="btn btn-grey" onclick="sendControl('fan_off')">⬜ Fan OFF</button>
                         </div>
                     </div>
                     <div id="ctrl-feedback"></div>
-                    <div class="ctrl-status-panel" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-                        <h3 style="font-size: 15px; color: #444; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border: none; padding: 0;">
+                    <div class="ctrl-status-panel"
+                        style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <h3
+                            style="font-size: 15px; color: #444; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border: none; padding: 0;">
                             <span>📊 Active Actuator States</span>
                         </h3>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                            
-                            <div class="status-indicator-card" style="background: #f8f9fa; border-radius: 10px; padding: 15px; border: 1px solid #e9ecef; text-align: center;">
-                                <div style="font-size: 28px; margin-bottom: 6px; height: 36px; display: flex; align-items: center; justify-content: center;" id="speaker-status-icon">🔇</div>
-                                <div style="font-size: 12px; color: #777; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Speaker (Buzzer)</div>
-                                <div style="font-size: 15px; font-weight: 700; color: #333; margin-top: 4px;" id="speaker-status-lbl">Stop</div>
+
+                            <div class="status-indicator-card"
+                                style="background: #f8f9fa; border-radius: 10px; padding: 15px; border: 1px solid #e9ecef; text-align: center;">
+                                <div style="font-size: 28px; margin-bottom: 6px; height: 36px; display: flex; align-items: center; justify-content: center;"
+                                    id="speaker-status-icon">🔇</div>
+                                <div
+                                    style="font-size: 12px; color: #777; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                                    Speaker (Buzzer)</div>
+                                <div style="font-size: 15px; font-weight: 700; color: #333; margin-top: 4px;"
+                                    id="speaker-status-lbl">Stop</div>
                             </div>
-                            
-                            
-                            <div class="status-indicator-card" style="background: #f8f9fa; border-radius: 10px; padding: 15px; border: 1px solid #e9ecef; text-align: center;">
-                                <div style="font-size: 28px; margin-bottom: 6px; height: 36px; display: flex; align-items: center; justify-content: center;" id="fan-status-icon">⬜</div>
-                                <div style="font-size: 12px; color: #777; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Ventilation Fan</div>
-                                <div style="font-size: 15px; font-weight: 700; color: #333; margin-top: 4px;" id="fan-status-lbl">OFF</div>
+
+
+                            <div class="status-indicator-card"
+                                style="background: #f8f9fa; border-radius: 10px; padding: 15px; border: 1px solid #e9ecef; text-align: center;">
+                                <div style="font-size: 28px; margin-bottom: 6px; height: 36px; display: flex; align-items: center; justify-content: center;"
+                                    id="fan-status-icon">⬜</div>
+                                <div
+                                    style="font-size: 12px; color: #777; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                                    Ventilation Fan</div>
+                                <div style="font-size: 15px; font-weight: 700; color: #333; margin-top: 4px;"
+                                    id="fan-status-lbl">OFF</div>
                             </div>
                         </div>
                     </div>
@@ -1003,7 +1135,8 @@ if ($res) {
                         <label>Temperature Danger Threshold (°C)</label>
                         <input type="number" id="set-threshold2-temp" placeholder="e.g. 45">
                     </div>
-                    <button class="btn btn-green" style="width:100%; margin-top:4px;" onclick="saveSettings()">💾 Save Settings</button>
+                    <button class="btn btn-green" style="width:100%; margin-top:4px;" onclick="saveSettings()">💾 Save
+                        Settings</button>
                     <div id="settings-feedback"></div>
                 </div>
             </div>
@@ -1011,7 +1144,8 @@ if ($res) {
             <div class="section-title">📊 Event Analysis &amp; Insights</div>
             <div class="panel" style="margin-bottom:8px;">
                 <h2>Summary of Last 20 Records</h2>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 15px;">
+                <div
+                    style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 15px;">
                     <div class="insight-card">
                         <span class="ilabel">🟢 Safe Events</span>
                         <span class="ivalue safe" id="ins-safe">—</span>
@@ -1034,7 +1168,8 @@ if ($res) {
                     </div>
                     <div class="insight-card">
                         <span class="ilabel">⏱️ Peak Gas Time</span>
-                        <span class="ivalue" id="ins-peak-time" style="font-size: 15px; font-weight: 700; line-height: 1.4; word-break: break-all;">—</span>
+                        <span class="ivalue" id="ins-peak-time"
+                            style="font-size: 15px; font-weight: 700; line-height: 1.4; word-break: break-all;">—</span>
                     </div>
                     <div class="insight-card">
                         <span class="ilabel">🌡️ Max Temperature</span>
@@ -1044,11 +1179,14 @@ if ($res) {
                         <span class="ilabel">🏃 Motion Events</span>
                         <span class="ivalue" id="ins-motion">—</span>
                     </div>
+                    <div class="insight-card">
+                        <span class="ilabel">🔥 Flame Events</span>
+                        <span class="ivalue danger" id="ins-flame">—</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        
         <!-- TAB content 2: Lists past event entries and shows live line charts. -->
         <div id="tab-events" class="tab-content">
 
@@ -1079,13 +1217,14 @@ if ($res) {
             </div>
         </div>
 
-        
         <!-- TAB content 3: Scan network page showing online operational devices. -->
         <div id="tab-devices" class="tab-content">
-            <div class="panel" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="panel"
+                style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2 style="margin:0; border:none; padding:0;">Network Scan Management</h2>
-                    <p style="margin: 4px 0 0; font-size:13px; color:#666;">Queries live IoT endpoints registered across your operational subnet channel.</p>
+                    <p style="margin: 4px 0 0; font-size:13px; color:#666;">Queries live IoT endpoints registered across
+                        your operational subnet channel.</p>
                 </div>
                 <button class="btn btn-blue" onclick="performRealNetworkScan()">🔄 Scan Network Now</button>
             </div>
@@ -1103,22 +1242,27 @@ if ($res) {
             <div id="other-devices-container"></div>
         </div>
 
-        
         <!-- TAB content 4: Profile management panel to update username and password. -->
         <div id="tab-profile" class="tab-content">
             <div class="panel" style="max-width: 500px; margin: 20px auto;">
                 <h2>👤 Manage Profile</h2>
-                <p style="font-size:13px; color:#666; margin-bottom: 20px;">View your account details and update your login credentials.</p>
-                
-                <div id="profile-feedback" style="font-weight:700; font-size:14px; margin-bottom:15px; display:none; padding:10px; border-radius:6px;"></div>
+                <p style="font-size:13px; color:#666; margin-bottom: 20px;">View your account details and update your
+                    login credentials.</p>
+
+                <div id="profile-feedback"
+                    style="font-weight:700; font-size:14px; margin-bottom:15px; display:none; padding:10px; border-radius:6px;">
+                </div>
 
                 <div class="field" style="margin-bottom:15px;">
                     <label style="font-weight:600; font-size:13px; display:block; margin-bottom:6px;">Username</label>
-                    <input type="text" id="profile-username" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; font-weight: 500;">
+                    <input type="text" id="profile-username"
+                        value="<?php echo htmlspecialchars($_SESSION['username']); ?>"
+                        style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; font-weight: 500;">
                 </div>
-                
+
                 <div class="field" style="margin-bottom:15px;">
-                    <label style="font-weight:600; font-size:13px; display:block; margin-bottom:6px;">Stored Hashed Password (Encrypted)</label>
+                    <label style="font-weight:600; font-size:13px; display:block; margin-bottom:6px;">Stored Hashed
+                        Password (Encrypted)</label>
                     <?php
                     $user_stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
                     $user_stmt->bind_param("i", $_SESSION['user_id']);
@@ -1130,27 +1274,29 @@ if ($res) {
                     }
                     $user_stmt->close();
                     ?>
-                    <input type="text" readonly value="<?php echo htmlspecialchars($hash); ?>" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ddd; background:#f4f4f4; color:#777; font-family: monospace; font-size: 11px;">
+                    <input type="text" readonly value="<?php echo htmlspecialchars($hash); ?>"
+                        style="width:100%; padding:10px; border-radius:6px; border:1px solid #ddd; background:#f4f4f4; color:#777; font-family: monospace; font-size: 11px;">
                 </div>
 
                 <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                
+
                 <div class="field" style="margin-bottom:15px;">
-                    <label style="font-weight:600; font-size:13px; display:block; margin-bottom:6px;">New Password (Optional)</label>
-                    <input type="password" id="profile-new-password" placeholder="Leave blank to keep current password" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+                    <label style="font-weight:600; font-size:13px; display:block; margin-bottom:6px;">New Password
+                        (Optional)</label>
+                    <input type="password" id="profile-new-password" placeholder="Leave blank to keep current password"
+                        style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
                 </div>
 
-                <button class="btn btn-green" style="width:100%; margin-top:10px;" onclick="saveUserProfile()">💾 Save Profile Changes</button>
+                <button class="btn btn-green" style="width:100%; margin-top:10px;" onclick="saveUserProfile()">💾 Save
+                    Profile Changes</button>
             </div>
         </div>
     </div>
 
-    
     <!-- Modal layout for configuring the remote Wi-Fi of an ESP32. -->
     <div id="wifi-config-modal">
         <div class="modal-card">
 
-            
             <div id="modal-step-sending">
                 <h2>📡 Configure WiFi</h2>
                 <p class="modal-subtitle">Contacting <strong id="modal-device-name"></strong>...</p>
@@ -1159,28 +1305,29 @@ if ($res) {
                 </div>
             </div>
 
-            
             <div id="modal-step-ready" style="display:none;">
                 <h2>✅ ESP32 is ready</h2>
                 <p class="modal-subtitle">The device has restarted in setup mode and is broadcasting its hotspot.</p>
                 <div class="steps-box">
                     <div>① On your phone/laptop, open <strong>WiFi Settings</strong></div>
-                    <div>② Connect to: <strong id="modal-ap-ssid" style="color:#1a73e8; font-size:14px;">ESP32-Safety-Setup</strong></div>
+                    <div>② Connect to: <strong id="modal-ap-ssid"
+                            style="color:#1a73e8; font-size:14px;">ESP32-Safety-Setup</strong></div>
                     <div>③ Tap the button below to open the setup page</div>
                 </div>
                 <div class="warn-box">
-                    ⚠️ Your internet will disconnect briefly while connected to the ESP32 hotspot. Reconnect to your normal WiFi after saving the new credentials.
+                    ⚠️ Your internet will disconnect briefly while connected to the ESP32 hotspot. Reconnect to your
+                    normal WiFi after saving the new credentials.
                 </div>
                 <a href="http://192.168.4.1" target="_blank" class="open-link">🌐 Open WiFi Setup Page →</a>
                 <button class="btn btn-grey" style="width:100%;" onclick="closeWifiModal()">Close</button>
             </div>
 
-            
             <div id="modal-step-error" style="display:none;">
                 <h2>❌ Could not reach device</h2>
                 <p class="modal-subtitle">The ESP32 did not respond. It may be offline or unreachable.</p>
                 <div class="error-box">
-                    Make sure the ESP32 is powered on and connected to the same network, then try again. You can also manually reboot the ESP32 — it will enter setup mode automatically if it cannot connect to WiFi.
+                    Make sure the ESP32 is powered on and connected to the same network, then try again. You can also
+                    manually reboot the ESP32 — it will enter setup mode automatically if it cannot connect to WiFi.
                 </div>
                 <button class="btn btn-grey" style="width:100%;" onclick="closeWifiModal()">Close</button>
             </div>
@@ -1199,25 +1346,19 @@ if ($res) {
             const selectedOption = selectElement.options[selectElement.selectedIndex];
             DEVICE_ID = selectElement.value;
             const deviceIp = selectedOption ? (selectedOption.getAttribute('data-ip') || '---') : '---';
-            
-            
+
             document.getElementById('device-ip-val').innerText = deviceIp;
-            
-            
-            
+
             renderDevicesList();
-            
-            
+
             document.getElementById('settings-feedback').textContent = '';
             document.getElementById('set-device-name').value = '';
             document.getElementById('set-threshold1').value = '';
             document.getElementById('set-threshold2-gas').value = '';
             document.getElementById('set-threshold2-temp').value = '';
-            
-            
+
             fetchSettingsData();
-            
-            
+
             fetchDashboardData();
         }
 
@@ -1225,22 +1366,19 @@ if ($res) {
             const select = document.getElementById('device-select');
             if (!select) return;
             const currentSelected = DEVICE_ID;
-            
-            
+
             const realOptions = Array.from(select.options).filter(opt => opt.value !== "");
             const existingValues = realOptions.map(opt => opt.value);
             const newValues = devices.map(d => d.device_id);
             const isSame = existingValues.length === newValues.length && existingValues.every((val, index) => val === newValues[index]);
-            
-            
+
             const existingNames = realOptions.map(opt => opt.textContent);
             const newNames = devices.map(d => d.device_name ? (d.device_name + " (" + d.device_id + ")") : d.device_id);
             const namesSame = existingNames.length === newNames.length && existingNames.every((val, index) => val === newNames[index]);
-            
+
             if (!isSame || !namesSame) {
                 select.innerHTML = '';
-                
-                
+
                 const defaultOpt = document.createElement('option');
                 defaultOpt.value = "";
                 defaultOpt.textContent = "No Primary Device";
@@ -1265,8 +1403,7 @@ if ($res) {
             } else {
                 select.value = currentSelected;
             }
-            
-            
+
             const selectedOption = select.options[select.selectedIndex];
             if (selectedOption) {
                 document.getElementById('device-ip-val').innerText = selectedOption.getAttribute('data-ip') || '---';
@@ -1275,19 +1412,18 @@ if ($res) {
 
         // JS: Renders network device cards into online/offline categories.
         function renderDevicesList() {
-            const primaryContainer   = document.getElementById('active-primary-node-container');
+            const primaryContainer = document.getElementById('active-primary-node-container');
             const secondaryContainer = document.getElementById('other-devices-container');
-            
+
             if (!primaryContainer || !secondaryContainer || lastScanDevices.length === 0) return;
-            
-            primaryContainer.innerHTML   = '';
+
+            primaryContainer.innerHTML = '';
             secondaryContainer.innerHTML = '';
             let primaryCount = 0, secondaryCount = 0;
 
             lastScanDevices.forEach(device => {
                 const isConnected = device.status === "Connected";
 
-                
                 const configBtn = isConnected
                     ? `<button class="btn btn-blue" onclick="triggerWifiConfig('${device.device_id}', '${device.device_ip}')">📡 Configure WiFi</button>`
                     : `<button class="btn btn-grey" disabled title="Device must be online to configure WiFi">📡 Configure WiFi</button>`;
@@ -1296,7 +1432,6 @@ if ($res) {
 
                 const displayName = device.device_name ? `${device.device_name} (${device.device_id})` : device.device_id;
 
-                
                 const removeBtn = (device.device_id === DEVICE_ID)
                     ? `<button class="btn btn-red" onclick="clearPrimaryDevice()" title="Unset as Primary Node">❌ Remove</button>`
                     : '';
@@ -1379,7 +1514,7 @@ if ($res) {
         async function saveSettings() {
             const fb = document.getElementById('settings-feedback');
             const devName = document.getElementById('set-device-name').value.trim();
-            const t1  = document.getElementById('set-threshold1').value.trim();
+            const t1 = document.getElementById('set-threshold1').value.trim();
             const t2g = document.getElementById('set-threshold2-gas').value.trim();
             const t2t = document.getElementById('set-threshold2-temp').value.trim();
             if (!t1 && !t2g && !t2t && !devName) { fb.style.color = '#b06000'; fb.textContent = '⚠️ Enter a value.'; return; }
@@ -1387,7 +1522,7 @@ if ($res) {
             try {
                 const body = new URLSearchParams({ device_id: DEVICE_ID });
                 if (devName !== '') body.set('device_name', devName);
-                if (t1)  body.set('threshold_1', t1);
+                if (t1) body.set('threshold_1', t1);
                 if (t2g) body.set('threshold_2', t2g);
                 if (t2t) body.set('threshold_2_temp', t2t);
                 const res = await fetch('update_settings.php', { method: 'POST', body });
@@ -1396,7 +1531,7 @@ if ($res) {
                     fb.style.color = '#137333';
                     fb.textContent = '✅ Settings saved.';
                     fetchSettingsData();
-                    performRealNetworkScan(); 
+                    performRealNetworkScan();
                 }
             } catch (err) { fb.style.color = '#c5221f'; fb.textContent = '❌ Error saving settings.'; }
             setTimeout(() => { fb.textContent = ''; }, 5000);
@@ -1404,7 +1539,7 @@ if ($res) {
 
         function updateInsights(data) {
             if (!data || data.length === 0) return;
-            let safe = 0, warn = 0, danger = 0, motion = 0, totalGas = 0,
+            let safe = 0, warn = 0, danger = 0, motion = 0, flame = 0, totalGas = 0,
                 peakGas = -Infinity, peakGasTime = '—', peakTemp = -Infinity;
             data.forEach(row => {
                 const s = row.status ? row.status.toLowerCase() : '';
@@ -1416,16 +1551,18 @@ if ($res) {
                 if (gas > peakGas) { peakGas = gas; peakGasTime = row.created_at; }
                 if (temp > peakTemp) peakTemp = temp;
                 if (parseInt(row.motion) === 1) motion++;
+                if (parseInt(row.sensor_3) === 1) flame++;
                 totalGas += gas;
             });
-            document.getElementById('ins-safe').textContent     = safe    + ' / ' + data.length;
-            document.getElementById('ins-warn').textContent     = warn    + ' / ' + data.length;
-            document.getElementById('ins-danger').textContent   = danger  + ' / ' + data.length;
+            document.getElementById('ins-safe').textContent = safe + ' / ' + data.length;
+            document.getElementById('ins-warn').textContent = warn + ' / ' + data.length;
+            document.getElementById('ins-danger').textContent = danger + ' / ' + data.length;
             document.getElementById('ins-peak-gas').textContent = peakGas.toFixed(1) + ' ppm';
             document.getElementById('ins-peak-time').textContent = peakGasTime;
             document.getElementById('ins-peak-temp').textContent = peakTemp.toFixed(1) + ' °C';
-            document.getElementById('ins-motion').textContent   = motion + ' event' + (motion !== 1 ? 's' : '');
-            document.getElementById('ins-avg-gas').textContent  = (totalGas / data.length).toFixed(1) + ' ppm';
+            document.getElementById('ins-motion').textContent = motion + ' event' + (motion !== 1 ? 's' : '');
+            document.getElementById('ins-flame').textContent = flame + ' event' + (flame !== 1 ? 's' : '');
+            document.getElementById('ins-avg-gas').textContent = (totalGas / data.length).toFixed(1) + ' ppm';
         }
 
         async function fetchSettingsData() {
@@ -1436,9 +1573,9 @@ if ($res) {
                 if (warnInfo) warnInfo.innerText = 'Warn: — ppm | Danger: — ppm';
                 if (dangerInfo) dangerInfo.innerText = 'Danger: — °C';
                 if (ipInfo) ipInfo.innerText = '---';
-                
-                const nameInput  = document.getElementById('set-device-name');
-                const t1Input    = document.getElementById('set-threshold1');
+
+                const nameInput = document.getElementById('set-device-name');
+                const t1Input = document.getElementById('set-threshold1');
                 const t2GasInput = document.getElementById('set-threshold2-gas');
                 const t2TempInput = document.getElementById('set-threshold2-temp');
                 if (nameInput) nameInput.value = '';
@@ -1460,12 +1597,12 @@ if ($res) {
                     document.getElementById('temp-threshold-info').innerText =
                         `Danger: ${parseFloat(settings.threshold_2_temp).toFixed(1)} °C`;
                     document.getElementById('device-ip-val').innerText = settings.device_ip || '---';
-                    const nameInput  = document.getElementById('set-device-name');
-                    const t1Input    = document.getElementById('set-threshold1');
+                    const nameInput = document.getElementById('set-device-name');
+                    const t1Input = document.getElementById('set-threshold1');
                     const t2GasInput = document.getElementById('set-threshold2-gas');
                     const t2TempInput = document.getElementById('set-threshold2-temp');
-                    if (document.activeElement !== nameInput  && !nameInput.value)  nameInput.value  = settings.device_name || '';
-                    if (document.activeElement !== t1Input    && !t1Input.value)    t1Input.value    = settings.threshold_1;
+                    if (document.activeElement !== nameInput && !nameInput.value) nameInput.value = settings.device_name || '';
+                    if (document.activeElement !== t1Input && !t1Input.value) t1Input.value = settings.threshold_1;
                     if (document.activeElement !== t2GasInput && !t2GasInput.value) t2GasInput.value = settings.threshold_2;
                     if (document.activeElement !== t2TempInput && !t2TempInput.value) t2TempInput.value = settings.threshold_2_temp;
 
@@ -1481,15 +1618,14 @@ if ($res) {
 
             const gasValue = parseFloat(latestLog.sensor_1);
             const temp = parseFloat(latestLog.sensor_2);
-            const flameStatus = parseInt(latestLog.sensor_3); 
-            
+            const flameStatus = parseInt(latestLog.sensor_3);
+
             const threshold_1 = parseFloat(currentSettings.threshold_1);
             const threshold_2 = parseFloat(currentSettings.threshold_2);
             const threshold_2_temp = parseFloat(currentSettings.threshold_2_temp);
-            
-            
+
             const isDanger = (gasValue > threshold_2 || temp > threshold_2_temp || flameStatus === 1);
-            
+
             const isWarning = (gasValue > threshold_1 && gasValue <= threshold_2);
             const hasHazard = (isDanger || isWarning);
 
@@ -1500,7 +1636,6 @@ if ($res) {
 
             const manualTrigger = (webAlarmState === 1);
 
-            
             let buzzerOutput = false;
             if (webAlarmState === 1) {
                 buzzerOutput = true;
@@ -1510,10 +1645,8 @@ if ($res) {
                 buzzerOutput = hasHazard;
             }
 
-            
             let fanOutput = (isDanger || webFanState === 1 || manualTrigger);
 
-            
             const speakerLbl = document.getElementById('speaker-status-lbl');
             const speakerIcon = document.getElementById('speaker-status-icon');
             if (speakerLbl && speakerIcon) {
@@ -1552,30 +1685,29 @@ if ($res) {
         // JS: Downloads log data from get_logs.php and populates table/charts.
         async function fetchDashboardData() {
             if (!DEVICE_ID) {
-                document.getElementById('gas-val').innerText         = '— ppm';
-                document.getElementById('temp-val').innerText        = '— °C';
-                document.getElementById('motion-val').innerText      = '—';
+                document.getElementById('gas-val').innerText = '— ppm';
+                document.getElementById('temp-val').innerText = '— °C';
+                document.getElementById('motion-val').innerText = '—';
                 const flameEl = document.getElementById('flame-val');
                 if (flameEl) flameEl.innerText = '—';
                 const badge = document.getElementById('status-val');
                 if (badge) {
-                    badge.innerText   = 'No Device';
-                    badge.className   = 'status-badge status-safe';
+                    badge.innerText = 'No Device';
+                    badge.className = 'status-badge status-safe';
                 }
                 const tbody = document.getElementById('table-body');
                 if (tbody) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;">No primary device selected.</td></tr>';
                 }
-                
+
                 if (trendChart) {
                     trendChart.data.labels = [];
                     trendChart.data.datasets[0].data = [];
                     trendChart.data.datasets[1].data = [];
                     trendChart.update();
                 }
-                
-                
-                const ids = ['ins-safe', 'ins-warn', 'ins-danger', 'ins-peak-gas', 'ins-peak-time', 'ins-peak-temp', 'ins-motion', 'ins-avg-gas'];
+
+                const ids = ['ins-safe', 'ins-warn', 'ins-danger', 'ins-peak-gas', 'ins-peak-time', 'ins-peak-temp', 'ins-motion', 'ins-flame', 'ins-avg-gas'];
                 ids.forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.textContent = '—';
@@ -1595,11 +1727,11 @@ if ($res) {
                         updateActuatorStatesUI();
                         const select = document.getElementById('device-select');
                         if (select) select.value = latest.device_id;
-                        
-                        document.getElementById('gas-val').innerText         = parseFloat(latest.sensor_1).toFixed(1) + ' ppm';
-                        document.getElementById('temp-val').innerText        = parseFloat(latest.sensor_2).toFixed(1) + ' °C';
-                        document.getElementById('motion-val').innerText      = parseInt(latest.motion) === 1 ? '⚠️ Motion' : '🟢 Clear';
-                        
+
+                        document.getElementById('gas-val').innerText = parseFloat(latest.sensor_1).toFixed(1) + ' ppm';
+                        document.getElementById('temp-val').innerText = parseFloat(latest.sensor_2).toFixed(1) + ' °C';
+                        document.getElementById('motion-val').innerText = parseInt(latest.motion) === 1 ? '⚠️ Motion' : '🟢 Clear';
+
                         const flameVal = parseInt(latest.sensor_3);
                         const flameEl = document.getElementById('flame-val');
                         if (flameEl) {
@@ -1609,12 +1741,12 @@ if ($res) {
                                 flameEl.innerHTML = '<span style="color:#137333; font-weight:700;">🟢 Clear</span>';
                             }
                         }
-                        
+
                         const badge = document.getElementById('status-val');
-                        badge.innerText   = latest.status;
-                        badge.className   = 'status-badge status-' + (
-                            latest.status.toLowerCase().includes('danger')  ? 'danger'  :
-                            latest.status.toLowerCase().includes('warning') ? 'warning' : 'safe'
+                        badge.innerText = latest.status;
+                        badge.className = 'status-badge status-' + (
+                            latest.status.toLowerCase().includes('danger') ? 'danger' :
+                                latest.status.toLowerCase().includes('warning') ? 'warning' : 'safe'
                         );
                         const tbody = document.getElementById('table-body');
                         tbody.innerHTML = '';
@@ -1626,16 +1758,15 @@ if ($res) {
                                 <td>${parseFloat(row.sensor_2).toFixed(1)} °C</td>
                                 <td>${parseInt(row.sensor_3) === 1 ? '<span style="color:#c5221f; font-weight:bold;">🔥 Yes</span>' : '—'}</td>
                                 <td>${parseInt(row.motion) === 1 ? '⚠️ Motion' : '—'}</td>
-                                <td><span class="status-badge status-${
-                                    row.status.toLowerCase().includes('danger')  ? 'danger'  :
+                                <td><span class="status-badge status-${row.status.toLowerCase().includes('danger') ? 'danger' :
                                     row.status.toLowerCase().includes('warning') ? 'warning' : 'safe'
                                 }">${row.status}</span></td>`;
                             tbody.appendChild(tr);
                         });
-                        const reversed    = [...result.data].reverse();
-                        const timestamps  = reversed.map(d => d.created_at.split(' ')[1]);
-                        const gasPoints   = reversed.map(d => parseFloat(d.sensor_1));
-                        const tempPoints  = reversed.map(d => parseFloat(d.sensor_2));
+                        const reversed = [...result.data].reverse();
+                        const timestamps = reversed.map(d => d.created_at.split(' ')[1]);
+                        const gasPoints = reversed.map(d => parseFloat(d.sensor_1));
+                        const tempPoints = reversed.map(d => parseFloat(d.sensor_2));
                         if (trendChart) {
                             trendChart.data.labels = timestamps;
                             trendChart.data.datasets[0].data = gasPoints;
@@ -1648,15 +1779,15 @@ if ($res) {
                                 data: {
                                     labels: timestamps,
                                     datasets: [
-                                        { label: 'Gas (ppm)',  data: gasPoints,  borderColor: '#ff9f43', backgroundColor: 'rgba(255,159,67,.08)', tension: 0.3, fill: true, yAxisID: 'y'  },
-                                        { label: 'Temp (°C)', data: tempPoints, borderColor: '#ee5253', backgroundColor: 'rgba(238,82,83,.08)',  tension: 0.3, fill: true, yAxisID: 'y1' }
+                                        { label: 'Gas (ppm)', data: gasPoints, borderColor: '#ff9f43', backgroundColor: 'rgba(255,159,67,.08)', tension: 0.3, fill: true, yAxisID: 'y' },
+                                        { label: 'Temp (°C)', data: tempPoints, borderColor: '#ee5253', backgroundColor: 'rgba(238,82,83,.08)', tension: 0.3, fill: true, yAxisID: 'y1' }
                                     ]
                                 },
                                 options: {
                                     responsive: true,
                                     interaction: { mode: 'index', intersect: false },
                                     scales: {
-                                        y:  { type: 'linear', position: 'left',  title: { display: true, text: 'Gas Level (ppm)' } },
+                                        y: { type: 'linear', position: 'left', title: { display: true, text: 'Gas Level (ppm)' } },
                                         y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Temperature (°C)' } }
                                     }
                                 }
@@ -1666,34 +1797,34 @@ if ($res) {
                     } else {
                         latestLog = null;
                         updateActuatorStatesUI();
-                        
-                        document.getElementById('gas-val').innerText         = '— ppm';
-                        document.getElementById('temp-val').innerText        = '— °C';
-                        document.getElementById('motion-val').innerText      = '—';
+
+                        document.getElementById('gas-val').innerText = '— ppm';
+                        document.getElementById('temp-val').innerText = '— °C';
+                        document.getElementById('motion-val').innerText = '—';
                         const flameEl = document.getElementById('flame-val');
                         if (flameEl) flameEl.innerText = '—';
                         const badge = document.getElementById('status-val');
-                        badge.innerText   = 'No Data';
-                        badge.className   = 'status-badge status-safe';
+                        badge.innerText = 'No Data';
+                        badge.className = 'status-badge status-safe';
                         const tbody = document.getElementById('table-body');
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;">No event logs recorded for this device.</td></tr>';
-                        
+
                         if (trendChart) {
                             trendChart.data.labels = [];
                             trendChart.data.datasets[0].data = [];
                             trendChart.data.datasets[1].data = [];
                             trendChart.update();
                         }
-                        
-                        
-                        document.getElementById('ins-safe').textContent     = '—';
-                        document.getElementById('ins-warn').textContent     = '—';
-                        document.getElementById('ins-danger').textContent   = '—';
+
+                        document.getElementById('ins-safe').textContent = '—';
+                        document.getElementById('ins-warn').textContent = '—';
+                        document.getElementById('ins-danger').textContent = '—';
                         document.getElementById('ins-peak-gas').textContent = '—';
                         document.getElementById('ins-peak-time').textContent = '—';
                         document.getElementById('ins-peak-temp').textContent = '—';
-                        document.getElementById('ins-motion').textContent   = '—';
-                        document.getElementById('ins-avg-gas').textContent  = '—';
+                        document.getElementById('ins-motion').textContent = '—';
+                        document.getElementById('ins-flame').textContent = '—';
+                        document.getElementById('ins-avg-gas').textContent = '—';
                     }
                 }
             } catch (error) { console.error('Fetch error:', error); }
@@ -1701,14 +1832,14 @@ if ($res) {
 
         // JS: Connects to local subnet to discover operating extensions.
         async function performRealNetworkScan() {
-            const primaryContainer   = document.getElementById('active-primary-node-container');
+            const primaryContainer = document.getElementById('active-primary-node-container');
             const secondaryContainer = document.getElementById('other-devices-container');
-            primaryContainer.innerHTML   = `<div class="device-item-card"><div class="device-item-details"><p>Scanning active channel sockets...</p></div></div>`;
+            primaryContainer.innerHTML = `<div class="device-item-card"><div class="device-item-details"><p>Scanning active channel sockets...</p></div></div>`;
             secondaryContainer.innerHTML = `<div class="device-item-card"><div class="device-item-details"><p>Probing extended node frequencies...</p></div></div>`;
 
             try {
                 const response = await fetch('scan_network.php');
-                const result   = await response.json();
+                const result = await response.json();
 
                 if (result.status === 200) {
                     lastScanDevices = result.devices;
@@ -1721,15 +1852,11 @@ if ($res) {
             }
         }
 
-        
-        
-        
         // JS: Sends remote command to reboot selected ESP32 into config mode.
         async function triggerWifiConfig(deviceId, deviceIp) {
-            
+
             document.getElementById('modal-device-name').textContent = deviceId;
-            
-            
+
             let apSSID = "ESP32-Safety-Setup";
             if (deviceId) {
                 let match = deviceId.match(/\d+$/);
@@ -1742,9 +1869,9 @@ if ($res) {
             document.getElementById('modal-ap-ssid').textContent = apSSID;
 
             document.getElementById('modal-step-sending').style.display = 'block';
-            document.getElementById('modal-step-ready').style.display   = 'none';
-            document.getElementById('modal-step-error').style.display   = 'none';
-            document.getElementById('wifi-config-modal').style.display  = 'flex';
+            document.getElementById('modal-step-ready').style.display = 'none';
+            document.getElementById('modal-step-error').style.display = 'none';
+            document.getElementById('wifi-config-modal').style.display = 'flex';
 
             try {
                 const body = new URLSearchParams({ device_id: deviceId, action: 'reboot_config' });
@@ -1764,17 +1891,17 @@ if ($res) {
         async function triggerRenameDevice(deviceId, currentName) {
             const displayCurrent = (currentName && currentName !== 'undefined' && currentName !== 'null') ? currentName : '';
             const newName = prompt(`Enter new preferred name for device "${deviceId}":`, displayCurrent);
-            if (newName === null) return; 
-            
+            if (newName === null) return;
+
             try {
                 const body = new URLSearchParams({ device_id: deviceId, device_name: newName.trim() });
                 const res = await fetch('update_settings.php', { method: 'POST', body });
                 const data = await res.json();
                 if (data.status === 200) {
                     alert('✅ Device renamed successfully!');
-                    performRealNetworkScan(); 
+                    performRealNetworkScan();
                     if (deviceId === DEVICE_ID) {
-                        fetchSettingsData(); 
+                        fetchSettingsData();
                     }
                 } else {
                     alert('❌ Failed to rename device: ' + data.message);
@@ -1796,40 +1923,37 @@ if ($res) {
         }
 
         function showModalReady() {
-            
+
             setTimeout(() => {
                 document.getElementById('modal-step-sending').style.display = 'none';
-                document.getElementById('modal-step-ready').style.display   = 'block';
+                document.getElementById('modal-step-ready').style.display = 'block';
             }, 1500);
         }
 
         function showModalError() {
             document.getElementById('modal-step-sending').style.display = 'none';
-            document.getElementById('modal-step-error').style.display   = 'block';
+            document.getElementById('modal-step-error').style.display = 'block';
         }
 
         function closeWifiModal() {
             document.getElementById('wifi-config-modal').style.display = 'none';
         }
 
-        
+
         document.getElementById('wifi-config-modal').addEventListener('click', function (e) {
             if (e.target === this) closeWifiModal();
         });
 
-        
-        
-        
         // JS: Sends new username and password profile details to the server.
         async function saveUserProfile() {
             const fb = document.getElementById('profile-feedback');
             if (!fb) return;
-            
+
             const username = document.getElementById('profile-username').value.trim();
             const password = document.getElementById('profile-new-password').value;
-            
+
             fb.style.display = 'none';
-            
+
             try {
                 const res = await fetch('index.php?action=update_profile', {
                     method: 'POST',
@@ -1837,7 +1961,7 @@ if ($res) {
                     body: JSON.stringify({ username, password })
                 });
                 const data = await res.json();
-                
+
                 if (data.status === 200) {
                     fb.style.display = 'block';
                     fb.style.background = '#e6f4ea';

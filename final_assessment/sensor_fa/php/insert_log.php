@@ -4,17 +4,17 @@
 include 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+
     // Extract sensor metrics and device identification from POST request.
     $device_id = $_POST['device_id'] ?? '';
-    $sensor_1  = $_POST['sensor_1'] ?? 0; 
-    $sensor_2  = $_POST['sensor_2'] ?? 0; 
-    $sensor_3  = $_POST['sensor_3'] ?? 1; 
-    $motion    = $_POST['motion'] ?? 0;   
-    $status    = $_POST['status'] ?? 'Safe';
+    $sensor_1 = $_POST['sensor_1'] ?? 0;
+    $sensor_2 = $_POST['sensor_2'] ?? 0;
+    $sensor_3 = $_POST['sensor_3'] ?? 1;
+    $motion = $_POST['motion'] ?? 0;
+    $status = $_POST['status'] ?? 'Safe';
 
     if (!empty($device_id)) {
-        
+
         // Identify IP address and connection SSID from the client device.
         $client_ip = $_POST['device_ip'] ?? '';
         if (empty($client_ip) || $client_ip === '0.0.0.0') {
@@ -32,8 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $ip_stmt->execute();
         $ip_stmt->close();
-        
-        
+
         // Insert log containing current gas, temp, flame, motion, and status values.
         $stmt = $conn->prepare("INSERT INTO sensor_data (device_id, sensor_1, sensor_2, sensor_3, motion, status) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sddiis", $device_id, $sensor_1, $sensor_2, $sensor_3, $motion, $status);

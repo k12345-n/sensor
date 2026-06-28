@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Get device ID and override action from POST request.
     $device_id = $_POST['device_id'] ?? 'ESP32_SAFETY_01';
-    $action    = $_POST['action'] ?? '';
+    $action = $_POST['action'] ?? '';
 
     // List of allowed manual controls for buzzer and fan.
     $allowed_actions = ['alarm_on', 'alarm_off', 'alarm_mute', 'fan_on', 'fan_off', 'reboot_config'];
@@ -49,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    
     // Fetch current actuator status (buzzer and fan states) from database.
     $stmt = $conn->prepare("SELECT actuator_status FROM device_settings WHERE device_id = ?");
     $stmt->bind_param("s", $device_id);
@@ -74,14 +73,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
-    
     // Update actuator state values based on the manual command.
     switch ($action) {
-        case 'alarm_on':   $current[0] = 1; break;
-        case 'alarm_off':  $current[0] = 0; break;
-        case 'alarm_mute': $current[0] = ($current[0] == 2) ? 0 : 2; break;
-        case 'fan_on':     $current[1] = 1; break;
-        case 'fan_off':    $current[1] = 0; break;
+        case 'alarm_on':
+            $current[0] = 1;
+            break;
+        case 'alarm_off':
+            $current[0] = 0;
+            break;
+        case 'alarm_mute':
+            $current[0] = ($current[0] == 2) ? 0 : 2;
+            break;
+        case 'fan_on':
+            $current[1] = 1;
+            break;
+        case 'fan_off':
+            $current[1] = 0;
+            break;
     }
 
     // Combine the updated states back and save to the database.

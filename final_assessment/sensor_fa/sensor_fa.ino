@@ -33,7 +33,6 @@ String getAPSSID() {
   return "ESP32-Safety-Setup-" + idStr;
 }
 
-
 // Pin mapping configurations for sensors and actuator hardware.
 #define DHTPIN 4          
 #define DHTTYPE DHT22 
@@ -51,11 +50,9 @@ String getAPSSID() {
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 DHT dht(DHTPIN, DHTTYPE);
 
-
 // Set up non-volatile flash preferences and listen on port 8080.
 Preferences preferences;
 WebServer mainServer(8080);   
-
 
 // Callback executed when entering captive portal configuration mode.
 void configModeCallback(WiFiManager *myWiFiManager) {
@@ -82,13 +79,11 @@ bool wasHazard = false;
 bool hasHazard = false;
 bool hasDanger = false;
 
-
 // Define variables to track time intervals and non-blocking button states.
 unsigned long lastUpdateMillis = 0;
 bool lastResetState = HIGH;
 bool lastManualState = HIGH;
 unsigned long buttonPressStartTime = 0;
-
 
 // Define safety limit parameters dynamically retrieved from database.
 float threshold_1 = 250.0;
@@ -107,7 +102,6 @@ void startConfigMode() {
   wm.setAPCallback(configModeCallback);
   wm.setConfigPortalTimeout(180); 
 
-  
   wm.setCustomHeadElement(R"rawhtml(
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -230,7 +224,6 @@ void startConfigMode() {
 
   wm.setTitle("Smart Safety System");
 
-  
   wm.setSaveConfigCallback([]() {
     Serial.println("WiFi Configuration Saved via Portal!");
     preferences.begin("wifi-creds", false);
@@ -238,10 +231,6 @@ void startConfigMode() {
     preferences.putString("pass", WiFi.psk());
     preferences.end();
   });
-
-  
-  
-  
   
   wm.setWebServerCallback([&wm]() {
     wm.server->on("/", [&wm]() {
@@ -255,7 +244,6 @@ void startConfigMode() {
     });
   });
 
-  
   if (!wm.startConfigPortal(apSSID.c_str())) {
     Serial.println("Portal timed out. Restarting...");
     display.clearDisplay();
@@ -277,7 +265,6 @@ void startConfigMode() {
   ESP.restart();
 }
 
-
 // Read saved credentials from non-volatile memory and connect to user's WiFi.
 void connectWiFi() {
   
@@ -286,7 +273,6 @@ void connectWiFi() {
   String savedPass = preferences.getString("pass", "");
   preferences.end();
 
-  
   if (savedSSID.length() == 0) {
     Serial.println("No saved WiFi credentials. Entering Setup...");
     display.clearDisplay();
@@ -298,7 +284,6 @@ void connectWiFi() {
     startConfigMode(); 
   }
 
-  
   Serial.println("\n==========================================");
   Serial.print("Connecting WiFi SSID: "); Serial.println(savedSSID);
   Serial.print("WiFi Password:        "); Serial.println(savedPass);
@@ -311,7 +296,6 @@ void connectWiFi() {
   display.println("Pass: " + savedPass);
   display.display();
 
-  
   WiFi.persistent(false);
   WiFi.disconnect(false); 
   WiFi.softAPdisconnect(true);
@@ -321,7 +305,6 @@ void connectWiFi() {
 
   WiFi.begin(savedSSID.c_str(), savedPass.c_str());
 
-  
   unsigned long startAttempt = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 60000) {
     delay(500);
@@ -383,7 +366,6 @@ String escapeParam(String val) {
   return escaped;
 }
 
-
 // Retrieve key float parameters from database JSON responses.
 float parseJsonFloat(String &json, String key) {
   int idx = json.indexOf("\"" + key + "\":");
@@ -442,13 +424,11 @@ void fetchSettings() {
         display.println("Entering Setup...");
         display.display();
         
-        
         preferences.begin("wifi-creds", false);
         preferences.clear();
         preferences.putBool("config-mode", true);
         preferences.end();
 
-        
         WiFiManager wm;
         wm.resetSettings();
 
@@ -475,7 +455,6 @@ void setWebAlarm(int state) {
   }
 }
 
-
 // Setup hardware pins, connect WiFi, and configure Web Server listeners.
 void setup() {
   Serial.begin(115200);
@@ -497,7 +476,6 @@ void setup() {
   display.setTextColor(WHITE);
   display.setTextSize(1);
 
-  
   preferences.begin("wifi-creds", false);
   bool forceConfig = preferences.getBool("config-mode", false);
   if (forceConfig) {
@@ -516,19 +494,16 @@ void setup() {
   connectWiFi();
   fetchSettings();
 
-  
   mainServer.on("/reboot-config", HTTP_POST, []() {
     mainServer.sendHeader("Access-Control-Allow-Origin", "*");
     mainServer.sendHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
     mainServer.send(200, "text/plain", "ok");
-    
     
     preferences.begin("wifi-creds", false);
     preferences.clear();
     preferences.putBool("config-mode", true); 
     preferences.end();
 
-    
     WiFiManager wm;
     wm.resetSettings();
     
@@ -536,7 +511,6 @@ void setup() {
     ESP.restart();
   });
 
-  
   mainServer.on("/reboot-config", HTTP_OPTIONS, []() {
     mainServer.sendHeader("Access-Control-Allow-Origin", "*");
     mainServer.sendHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -548,7 +522,6 @@ void setup() {
   Serial.println("Main server listening on port 8080");
 }
 
-
 // Loop: Handle controls, process inputs, read sensors, evaluate thresholds, and post logs.
 void loop() {
   
@@ -556,7 +529,6 @@ void loop() {
 
   int resetPressed  = digitalRead(RESET_BTN_PIN);
   int manualPressed = digitalRead(MANUAL_BTN_PIN);
-
 
   // Check Button 1: Toggle mute state on short press, format Wi-Fi NVS on 3-second hold.
   if (resetPressed == LOW) {
@@ -596,7 +568,6 @@ void loop() {
   }
   lastResetState = resetPressed;
 
-
   // Check Button 2: Toggle manual override test alarm.
   if (manualPressed == LOW && lastManualState == HIGH) {
     if (webAlarmState == 1) {
@@ -612,7 +583,6 @@ void loop() {
   }
   lastManualState = manualPressed;
   manualTrigger = (webAlarmState == 1);
-
 
   // Core task loop: read parameters, compare warnings/danger levels, and upload payload.
   unsigned long currentMillis = millis();
@@ -685,7 +655,6 @@ void loop() {
     }
     wasHazard = hasHazard;
   }
-
 
   // Set physical outputs: sound buzzer on hazard, start fan on danger level.
   bool buzzerOutput = false;

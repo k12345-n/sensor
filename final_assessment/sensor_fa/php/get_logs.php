@@ -29,7 +29,6 @@ while ($row = $result->fetch_assoc()) {
     $logs[] = $row;
 }
 
-
 // Return log list to the dashboard in JSON format.
 echo json_encode([
     "status" => 200,

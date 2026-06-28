@@ -4,7 +4,6 @@ header('Content-Type: application/json');
 // Connect to the database.
 include 'db_connect.php';
 
-
 // Select registered device details and compute the duration since their last update.
 $query = "
     SELECT 
@@ -26,17 +25,15 @@ while ($row = $result->fetch_assoc()) {
     $ip = $row['device_ip'] ?? '0.0.0.0';
     $is_online = false;
 
-    
     // Online Check 1: If the last database check-in was within 15 seconds, the node is online.
     $seconds_ago = $row['seconds_ago'];
     if ($seconds_ago !== null && $seconds_ago <= 15) {
         $is_online = true;
     }
 
-    
     // Online Check 2: Try checking port 8080 directly with a socket timeout of 0.8 seconds.
     if (!$is_online && $ip !== '0.0.0.0' && !empty($ip)) {
-        
+
         $connection = @fsockopen($ip, 8080, $errno, $errstr, 0.8);
         if ($connection) {
             $is_online = true;
